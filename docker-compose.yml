@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: vamsi@2004
+      MYSQL_DATABASE: portf
+    ports:
+      - "3307:3306"
+
+    networks:
+      - app-network
+
+  portfolio:
+    build: .
+    container_name: portfolio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/portf
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: vamsi@2004
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
