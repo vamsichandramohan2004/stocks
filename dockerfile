@@ -1,37 +1,22 @@
-# Step 1: Build stage
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:21-jdk-slim
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the pom.xml and install dependencies
-COPY pom.xml ./
+# Copy the application JAR file into the container
+COPY target/portfolio-0.0.1-SNAPSHOT.jar portfolio.jar
 
-# Download dependencies (this will cache dependencies if there are no changes to pom.xml)
-RUN mvn dependency:go-offline
-
-# Copy the rest of the source code
-COPY src /app/src
-
-# Build the application and package it into a jar
-RUN mvn clean package -DskipTests
-
-# Step 2: Runtime stage
-FROM eclipse-temurin:21-jdk AS runtime
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the built jar from the build stage
-COPY --from=build /app/target/portfolio-0.0.1-SNAPSHOT.jar /app/portfolio.jar
-
-# Expose the port the app will run on
+# Expose the application port
 EXPOSE 8080
 
-# Set environment variables for MySQL (you can pass these through Docker Compose or command line for flexibility)
-ENV SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/portf
+# Set environment variables for the application (optional; override with Docker Compose)
+ENV SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3307/portf
+
 ENV SPRING_DATASOURCE_USERNAME=root
-ENV SPRING_DATASOURCE_PASSWORD=vamsi@2004
+ENV SPRING_DATASOURCE_PASSWORD=vamsi@2004/01/02
+ENV SPRING_JPA_HIBERNATE_DDL_AUTO=update
+ENV SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "portfolio.jar"]
