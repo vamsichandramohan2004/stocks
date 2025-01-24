@@ -1,3 +1,4 @@
+# General Ignore Files
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -6,23 +7,22 @@ target/
 !Dockerfile
 !docker-compose.yml
 
-### STS ###
+# Spring Tool Suite (STS) specific files
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA specific files
+.idea/
 *.iws
 *.iml
 *.ipr
 
-
-### NetBeans ###
+# NetBeans specific files
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -32,6 +32,17 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+# Visual Studio Code specific files
 .vscode/
 desktop.ini
+
+# General Maven Ignore
+.mvn/
+*.log
+*.jar
+*.war
+*.ear
+
+# Operating System Specific Files
+.DS_Store
+Thumbs.db
