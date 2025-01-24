@@ -1,41 +1,30 @@
+version: '3.9'
+
 services:
-  # MySQL database service
-  database:
-    image: mysql:8.0
+  portfolio-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://portfolio-db:3306/portf
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=vamsi@2004/01/02
+    depends_on:
+      - portfolio-db
+
+  portfolio-db:
+    image: mysql:8.0.41
     container_name: portfolio-db
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: vamsi@2004/01/02
       MYSQL_DATABASE: portf
     ports:
-      - "3307:3306"  # Local port 3307 maps to MySQL's port 3306 inside the container
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - app-network
-
-  # Spring Boot application
-  app:
-    build:
-      context: .
-    container_name: portfolio-app
-    depends_on:
-      - database
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/portf  # Keep this as 3306 because the container uses that port
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: vamsi@2004/01/02
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
-    volumes:
-      - .:/app
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
 
 volumes:
   db_data:

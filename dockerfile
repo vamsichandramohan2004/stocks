@@ -1,22 +1,27 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:21-jdk-slim
+# Use Maven with Java 21 for building the application
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the application JAR file into the container
-COPY target/portfolio-0.0.1-SNAPSHOT.jar portfolio.jar
+# Copy the Maven project files
+COPY pom.xml .
+COPY src ./src
+
+# Package the application
+RUN mvn clean package -DskipTests
+
+# Use OpenJDK 21 runtime for running the application
+FROM eclipse-temurin:21-jdk
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR from the previous stage
+COPY --from=build /app/target/portfolio-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
 EXPOSE 8080
 
-# Set environment variables for the application (optional; override with Docker Compose)
-ENV SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3307/portf
-
-ENV SPRING_DATASOURCE_USERNAME=root
-ENV SPRING_DATASOURCE_PASSWORD=vamsi@2004/01/02
-ENV SPRING_JPA_HIBERNATE_DDL_AUTO=update
-ENV SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "portfolio.jar"]
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
